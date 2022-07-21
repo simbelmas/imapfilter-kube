@@ -1,0 +1,70 @@
+{% for var in imapfilter_internal_lua_vars %}
+{{ var }}
+{% endfor %}
+
+-- dayDate=form_date(0)
+
+myMessages = function ()
+-- print(dayDate)
+--  msgs = account.inbox:arrived_since(dayDate)
+--    msgs = account.inbox:arrived_since('14-Jan-2015')
+  msgs = account.inbox
+ return msgs
+end
+
+rotateMailboxToTrash = function (folder,historyDays,trashFolder)
+-- delete messages older than historyDays and not flagged as important in folder
+dateHistory=form_date(historyDays)
+oldStuff= account[folder]:arrived_before(dateHistory):is_unflagged()
+oldStuff:move_messages(trashFolder)
+end
+
+markOldRead = function (folder,historyDays)
+  -- delete messages older than historyDays and not flagged as important in folder
+  dateHistory=form_date(historyDays)
+  oldStuff= account[folder]:arrived_before(dateHistory):is_unflagged():is_unseen()
+  oldStuff:mark_seen()
+  end
+
+{# define raw configuration #}
+{% if imapfilter_raw_configuration is defined and imapfilter_raw_configuration is iterable %}
+{% for action in imapfilter_raw_configuration %}
+{{ action }}
+{% endfor %}
+{% endif %}
+
+{# Set filters #}
+{% for group in imapfilter_filters %}
+-- Start {{ group.name }}: {{ group.comment }}
+{{ group.name }}Messages = {{ group.messagesFrom  }}
+{% if group.rules is defined %}
+{% set rules = group.rules %}
+{{ group.name }} =  {%- for rule in rules %}
+  {% if rule is mapping %}
+  {% if rule.filter is iterable and rule.filter is not string -%}
+  ( {% for filter in rule.filter -%}
+  {{ group.name }}Messages:{{ filter }} {{ '' if loop.last else rule.filter_operator }}
+  {% endfor %} ) {{ '' if loop.last else rule.operator | default('+') }}
+  {% else %} 
+  {{ group.name }}Messages:{{ rule.filter }} {{ '' if loop.last else rule.operator | default('+') }}
+  {% endif %}
+  {% else %}
+  {{ group.name }}Messages:{{ rule }} {{ '' if loop.last else rule.operator | default('+') }}
+  {% endif %}
+{% endfor %}
+{% else %}
+{{ group.name }} = {{ group.name }}Messages
+{% endif %}
+{%if group.action is defined %}
+{% if group.action is iterable and group.action is not string -%}
+{% for action in group.action -%}
+{{ group.name }}:{{ action }}
+{% endfor %}
+{% else %}
+{{ group.name }}:{{ group.action }}
+{% endif %}
+{% endif %}
+-- End {{ group.name }}
+{% endfor %}
+
+

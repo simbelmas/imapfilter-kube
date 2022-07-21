@@ -1,0 +1,120 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: imapfilter-dev
+  labels:
+    app.kubernetes.io/part-of: imapfilter-dev
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: git-creds
+  labels:
+    app.kubernetes.io/part-of: imapfilter-dev
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: email-creds
+  labels:
+    app.kubernetes.io/part-of: imapfilter-dev
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: imapfilter-cm
+  labels:
+    app.kubernetes.io/part-of: imapfilter-dev
+data:
+  IMAPFILTER_GIT_ARGS: --branch main
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/part-of: imapfilter-dev
+  name: imapfilter
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: imapfilter-dev
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/part-of: imapfilter-dev
+    spec:
+      containers:
+      - image: quay.io/simbelmas/imapfilter:latest
+        imagePullPolicy: IfNotPresent
+        name: imapfilter
+        volumeMounts:
+        - mountPath: /imapfilter/config
+          name: config
+          readOnly: true
+        - mountPath: /imapfilter/creds
+          name: creds
+          readOnly: true
+      initContainers:
+      - command:
+        - ash
+        - -e
+        - -c
+        - |-
+          git_retries=20
+          try=0
+          export GIT_SSH_COMMAND='ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i "/git-secrets/ssh-privatekey"'
+          until timeout 10 git clone --recurse-submodules ${IMAPFILTER_GIT_ARGS} ${IMAPFILTER_GIT_REPO} /tmp/git  ; do
+            echo "Retry git pull after error ($try / $git_retries)"
+            try=$((try+1))
+            if [ $try -eq $git_retries  ]; then
+              exit 1
+            fi
+            sleep 1
+          done
+          cd /tmp/git
+          ./imapfilter-kube/lua-generator/generate_imapfilter_config.sh /imapfilter/config ./${IMAPFILTER_VARS_FILENAME}
+        env:
+        - name: IMAPFILTER_GIT_ARGS
+          valueFrom:
+            configMapKeyRef:
+              key: git-clone-args
+              name: imapfilter-cm
+              optional: true
+        - name: IMAPFILTER_GIT_REPO
+          valueFrom:
+            configMapKeyRef:
+              key: git-repo
+              name: imapfilter-cm
+              optional: false
+        - name: IMAPFILTER_VARS_FILENAME
+          valueFrom:
+            configMapKeyRef:
+              key: imapfilter-rules-path
+              name: imapfilter-cm
+              optional: false
+        image: quay.io/simbelmas/alpine-tools:latest
+        imagePullPolicy: IfNotPresent
+        name: git-checkout
+        volumeMounts:
+        - mountPath: /imapfilter/config
+          name: config
+        - mountPath: /git-secrets
+          name: git-secrets
+          readOnly: true
+      volumes:
+      - name: creds
+        secret:
+          defaultMode: 420
+          secretName: email-creds
+      - name: git-secrets
+        secret:
+          defaultMode: 420
+          secretName: git-creds
+      - emptyDir: {}
+        name: config
