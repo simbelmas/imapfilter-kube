@@ -8,6 +8,17 @@ configMapGenerator:
   - name: imapfilter-cm
     literals:
     - git-clone-args="--branch main"
+    envs:
+    - env-rules-sha
+
+vars:
+- name: RULES_FILE_SHA
+  objref:
+    name: imapfilter-cm
+    kind: ConfigMap
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.RULES_FILE_SHA
 
 secretGenerator:
   - name: git-creds
