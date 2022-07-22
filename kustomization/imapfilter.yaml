@@ -4,31 +4,6 @@ metadata:
   name: imapfilter-dev
   labels:
     app.kubernetes.io/part-of: imapfilter-dev
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: git-creds
-  labels:
-    app.kubernetes.io/part-of: imapfilter-dev
-
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: email-creds
-  labels:
-    app.kubernetes.io/part-of: imapfilter-dev
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: imapfilter-cm
-  labels:
-    app.kubernetes.io/part-of: imapfilter-dev
-data:
-  IMAPFILTER_GIT_ARGS: --branch main
 
 ---
 apiVersion: apps/v1
