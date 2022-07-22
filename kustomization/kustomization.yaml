@@ -12,13 +12,13 @@ configMapGenerator:
     - env-rules-sha
 
 vars:
-- name: RULES_FILE_SHA
+- name: ARGOCD_APP_REVISION
   objref:
     name: imapfilter-cm
     kind: ConfigMap
     apiVersion: v1
   fieldref:
-    fieldpath: data.RULES_FILE_SHA
+    fieldpath: data.ARGOCD_APP_REVISION
 
 secretGenerator:
   - name: git-creds
