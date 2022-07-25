@@ -2,12 +2,16 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: imapfilter
+  labels:
+    app.kubernetes.io/part-of: imapfilter
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: imapfilter
+  labels:
+    app.kubernetes.io/part-of: imapfilter
 spec:
   replicas: 1
   revisionHistoryLimit: 3
