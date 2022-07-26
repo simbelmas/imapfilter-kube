@@ -23,10 +23,9 @@ rotateFilteredMailboxToTrash = function (folder,filter,historyDays,trashFolder)
 -- delete messages older than historyDays and not flagged as important in folder
 dateHistory=form_date(historyDays)
 oldStuff= account[folder]:arrived_before(dateHistory):is_unflagged()
-load("oldStuff:" + filter)
+load("oldStuff= oldStuff:" + filter)
 oldStuff:move_messages(trashFolder)
 end
-
 
 markOldRead = function (folder,historyDays)
   -- delete messages older than historyDays and not flagged as important in folder
