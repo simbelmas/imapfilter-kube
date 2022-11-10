@@ -44,6 +44,7 @@ markOldRead = function (folder,historyDays)
 {# Set filters #}
 {% for group in imapfilter_filters %}
 -- Start {{ group.name }}: {{ group.comment }}
+print("Start group {{ group.name }}: {{ group.comment }}")
 {{ group.name }}Messages = {{ group.messagesFrom  }}
 {% if group.rules is defined %}
 {% set rules = group.rules %}
