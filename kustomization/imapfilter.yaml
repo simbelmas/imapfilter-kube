@@ -24,9 +24,17 @@ spec:
       labels:
         app.kubernetes.io/part-of: imapfilter
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - image: quay.io/simbelmas/imapfilter:latest
         imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ['ALL']
         name: imapfilter
         volumeMounts:
         - mountPath: /imapfilter/config
@@ -75,6 +83,10 @@ spec:
               optional: false
         image: quay.io/simbelmas/alpine-tools:latest
         imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ['ALL']
         name: git-checkout
         volumeMounts:
         - mountPath: /imapfilter/config
