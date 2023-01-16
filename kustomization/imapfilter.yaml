@@ -29,7 +29,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-      - image: quay.io/simbelmas/imapfilter:latest
+      - image: quay.io/simbelmas/imapfilter:stable
         imagePullPolicy: IfNotPresent
         securityContext:
           allowPrivilegeEscalation: false
@@ -81,7 +81,7 @@ spec:
               key: imapfilter-rules-path
               name: imapfilter-cm
               optional: false
-        image: quay.io/simbelmas/alpine-tools:latest
+        image: quay.io/simbelmas/alpine-tools:stable
         imagePullPolicy: IfNotPresent
         securityContext:
           allowPrivilegeEscalation: false
