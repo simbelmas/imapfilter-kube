@@ -11,17 +11,6 @@ configMapGenerator:
   - name: imapfilter-cm
     literals:
     - git-clone-args="--branch main"
-    envs:
-    - env-rules-sha
-
-vars:
-- name: ARGOCD_APP_REVISION
-  objref:
-    name: imapfilter-cm
-    kind: ConfigMap
-    apiVersion: v1
-  fieldref:
-    fieldpath: data.ARGOCD_APP_REVISION
 
 secretGenerator:
   - name: git-creds
