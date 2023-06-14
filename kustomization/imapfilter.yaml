@@ -37,10 +37,10 @@ spec:
             drop: ['ALL']
         name: imapfilter
         volumeMounts:
-        - mountPath: /imapfilter/config
+        - mountPath: /app/config
           name: config
           readOnly: true
-        - mountPath: /imapfilter/creds
+        - mountPath: /app/creds
           name: creds
           readOnly: true
       initContainers:
@@ -61,7 +61,7 @@ spec:
             sleep 1
           done
           cd /tmp/git
-          ./imapfilter-kube/lua-generator/generate_imapfilter_config.sh /imapfilter/config ./${IMAPFILTER_VARS_FILENAME}
+          ./imapfilter-kube/lua-generator/generate_imapfilter_config.sh /app/config ./${IMAPFILTER_VARS_FILENAME}
         env:
         - name: IMAPFILTER_GIT_ARGS
           valueFrom:
@@ -89,7 +89,7 @@ spec:
             drop: ['ALL']
         name: git-checkout
         volumeMounts:
-        - mountPath: /imapfilter/config
+        - mountPath: /app/config
           name: config
         - mountPath: /git-secrets
           name: git-secrets
