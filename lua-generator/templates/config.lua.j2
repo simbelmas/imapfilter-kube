@@ -12,7 +12,7 @@ myMessages = function ()
  return msgs
 end
 
-rotateMailboxMarkDeleted = function (folder,historyDays,trashFolder)
+rotateMailboxMarkDeleted = function (folder,historyDays)
 -- for gmail
 -- delete messages older than historyDays and not flagged as important in folder without move,only delete
 dateHistory=form_date(historyDays)
@@ -20,7 +20,7 @@ oldStuff= account[folder]:arrived_before(dateHistory):is_unflagged()
 oldStuff:mark_deleted()
 end
 
-rotateFilteredMailboxMarkDeleted = function (folder,filter,historyDays,trashFolder)
+rotateFilteredMailboxMarkDeleted = function (folder,filter,historyDays)
 -- for gmail
 -- delete messages older than historyDays and not flagged as important in folder  without move,only delete
 dateHistory=form_date(historyDays)
