@@ -12,6 +12,13 @@ myMessages = function ()
  return msgs
 end
 
+rotateMailboxMarkDeleted = function (folder,historyDays)
+-- mark messages older than historyDays and not flagged as important in folder deleted
+dateHistory=form_date(historyDays)
+oldStuff= account[folder]:arrived_before(dateHistory):is_unflagged()
+oldStuff:mark_deleted()
+end
+
 rotateMailboxToTrash = function (folder,historyDays,trashFolder)
 -- delete messages older than historyDays and not flagged as important in folder
 dateHistory=form_date(historyDays)
@@ -28,7 +35,7 @@ oldStuff:move_messages(trashFolder)
 end
 
 markOldRead = function (folder,historyDays)
-  -- delete messages older than historyDays and not flagged as important in folder
+  -- Mark older than historyDays and not flagged as important read in folder
   dateHistory=form_date(historyDays)
   oldStuff= account[folder]:arrived_before(dateHistory):is_unflagged():is_unseen()
   oldStuff:mark_seen()
