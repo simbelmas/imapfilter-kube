@@ -14,8 +14,6 @@ configMapGenerator:
 
 secretGenerator:
   - name: git-creds
-    literals:
-    - ssh-privatekey=your clear ssh private key
   - name: email-creds
     literals:
     - creds.lua=imapfilter lua account definition file  
