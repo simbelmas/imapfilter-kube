@@ -1,5 +1,0 @@
-
-repeat
-		dofile ("{{ imapfilter_config_dir }}/rules.lua")
-until not account.inbox:enter_idle()
-os.exit(0);

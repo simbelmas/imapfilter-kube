@@ -1,0 +1,19 @@
+{% if imapfilter_sleep_duration is defined %}
+{% if imapfilter_sleep_duration is not number %}
+	os.exit(1)
+{% endif %}
+sleep_period={{ imapfilter_sleep_duration }}
+while true do
+    dofile ("{{ imapfilter_config_dir }}/rules.lua")
+    if type(sleep_period) ~= "number" then
+        error("Unable to wait if parameter 'seconds' isn't a number: " .. type(sleep_period))
+    end
+    local timer = io.popen("sleep " .. sleep_period)
+    timer:close()
+end
+{% else %}
+
+while true do
+		dofile ("{{ imapfilter_config_dir }}/rules.lua")
+end
+{% endif %}

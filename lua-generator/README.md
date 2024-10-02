@@ -38,5 +38,7 @@ git submodule update --remote
 ## Calling generator
 generate_imapfilter_config.sh {IMAFILTER_CONFIG_DIR} {JINJA_VAR_FILES}
 
+if jinja2 variable 'imapfilter_sleep_duration' is set, the configuration does not use *enter_idle()* function but runs in a loop with a correspondinng sleep time.
+
 The script uses templates in templates dir to generate 2 lua files used by imapfilter.
 imapIdleDaemon.lua is the config file to point from imapfilter cmdline

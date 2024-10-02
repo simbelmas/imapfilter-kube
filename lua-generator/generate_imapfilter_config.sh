@@ -25,6 +25,6 @@ jinja2_vars_file="$2"
 (
     set -x
 
-    jinja2 -D "imapfilter_config_dir=${imapfilter_config_dir}" "${script_dir}/templates/imapIdleDaemon.lua.j2" "${jinja2_vars_file}"  > "${imapfilter_config_dir}/config.lua"
+    jinja2 -D "imapfilter_config_dir=${imapfilter_config_dir}" "${script_dir}/templates/imapFilterRun.lua.j2" "${jinja2_vars_file}"  > "${imapfilter_config_dir}/config.lua"
     jinja2 "${script_dir}/templates/config.lua.j2" "${jinja2_vars_file}" > "${imapfilter_config_dir}/rules.lua"
 )
