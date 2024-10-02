@@ -8,8 +8,8 @@ while true do
     if type(sleep_period) ~= "number" then
         error("Unable to wait if parameter 'seconds' isn't a number: " .. type(sleep_period))
     end
-    local timer = io.popen("sleep " .. sleep_period)
-    timer:close()
+    print("Enterinng sleep for " .. sleep_period .. "seconds")
+    os.execute("sleep " .. sleep_period)
 end
 {% else %}
 
