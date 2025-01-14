@@ -45,7 +45,7 @@ spec:
           readOnly: true
       initContainers:
       - command:
-        - ash
+        - sh
         - -e
         - -c
         - |-
@@ -81,7 +81,7 @@ spec:
               key: imapfilter-rules-path
               name: imapfilter-cm
               optional: false
-        image: quay.io/simbelmas/alpine-tools:stable
+        image: quay.io/simbelmas/toolbox:stable
         imagePullPolicy: IfNotPresent
         securityContext:
           allowPrivilegeEscalation: false
