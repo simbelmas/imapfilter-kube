@@ -13,7 +13,8 @@ while true do
 end
 {% else %}
 
-while true do
-		dofile ("{{ imapfilter_config_dir }}/rules.lua")
-end
+repeat
+    dofile ("{{ imapfilter_config_dir }}/rules.lua")
+until not account.inbox:enter_idle()
 {% endif %}
+os.exit(0);
