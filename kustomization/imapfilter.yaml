@@ -51,7 +51,6 @@ spec:
         - |-
           git_retries=20
           try=0
-          export GIT_SSH_COMMAND='ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i "/git-secrets/ssh-privatekey"'
           until timeout 10 git clone --recurse-submodules ${IMAPFILTER_GIT_ARGS} ${IMAPFILTER_GIT_REPO} /tmp/git  ; do
             echo "Retry git pull after error ($try / $git_retries)"
             try=$((try+1))
@@ -63,6 +62,8 @@ spec:
           cd /tmp/git
           ./imapfilter-kube/lua-generator/generate_imapfilter_config.sh /app/config ./${IMAPFILTER_VARS_FILENAME}
         env:
+        - name: GIT_SSH_COMMAND
+          value: ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i "/git-secrets/ssh-privatekey"
         - name: IMAPFILTER_GIT_ARGS
           valueFrom:
             configMapKeyRef:
