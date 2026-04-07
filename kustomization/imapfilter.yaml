@@ -44,23 +44,21 @@ spec:
           name: creds
           readOnly: true
       initContainers:
-      - command:
+      - name: git-checkout
+        command:
         - sh
         - -e
         - -c
         - |-
           git_retries=20
           try=0
-          until timeout 10 git clone --recurse-submodules ${IMAPFILTER_GIT_ARGS} ${IMAPFILTER_GIT_REPO} /tmp/git  ; do
+          until timeout 10 git clone --recurse-submodules ${IMAPFILTER_GIT_ARGS} ${IMAPFILTER_GIT_REPO} /git  ; do
             echo "Retry git pull after error ($try / $git_retries)"
             try=$((try+1))
             if [ $try -eq $git_retries  ]; then
               exit 1
             fi
-            sleep 1
           done
-          cd /tmp/git
-          ./imapfilter-kube/lua-generator/generate_imapfilter_config.sh /app/config ./${IMAPFILTER_VARS_FILENAME}
         env:
         - name: GIT_SSH_COMMAND
           value: ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -i "/git-secrets/ssh-privatekey"
@@ -76,26 +74,50 @@ spec:
               key: git-repo
               name: imapfilter-cm
               optional: false
+        image: quay.io/simbelmas/git-cli:stable
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ['ALL']
+        volumeMounts:
+        - mountPath: /git
+          name: git
+        - mountPath: /git-secrets
+          name: git-secrets
+          readOnly: true
+      - name: rules-generator
+        command:
+        - sh
+        - -e
+        - -c
+        - |-
+          cd /git
+          ./imapfilter-kube/lua-generator/generate_imapfilter_config.sh /app/config ./${IMAPFILTER_VARS_FILENAME}
+        env:
         - name: IMAPFILTER_VARS_FILENAME
           valueFrom:
             configMapKeyRef:
               key: imapfilter-rules-path
               name: imapfilter-cm
               optional: false
-        image: quay.io/simbelmas/toolbox:stable
+        image: quay.io/simbelmas/imapfilter:stable
         imagePullPolicy: IfNotPresent
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
             drop: ['ALL']
-        name: git-checkout
         volumeMounts:
         - mountPath: /app/config
           name: config
         - mountPath: /git-secrets
           name: git-secrets
           readOnly: true
+        - mountPath: /git
+          name: git
       volumes:
+      - name: git
+        emptyDir: {}
       - name: creds
         secret:
           defaultMode: 420
