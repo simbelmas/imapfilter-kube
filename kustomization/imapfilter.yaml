@@ -52,7 +52,7 @@ spec:
         - |-
           git_retries=20
           try=0
-          until timeout 10 git clone --recurse-submodules ${IMAPFILTER_GIT_ARGS} ${IMAPFILTER_GIT_REPO} /git  ; do
+          until timeout 10 git clone --recurse-submodules ${IMAPFILTER_GIT_ARGS} ${IMAPFILTER_GIT_REPO} /git/imapfilter  ; do
             echo "Retry git pull after error ($try / $git_retries)"
             try=$((try+1))
             if [ $try -eq $git_retries  ]; then
@@ -92,7 +92,7 @@ spec:
         - -e
         - -c
         - |-
-          cd /git
+          cd /git/imapfilter
           ./imapfilter-kube/lua-generator/generate_imapfilter_config.sh /app/config ./${IMAPFILTER_VARS_FILENAME}
         env:
         - name: IMAPFILTER_VARS_FILENAME
