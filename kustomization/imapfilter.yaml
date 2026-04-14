@@ -52,6 +52,9 @@ spec:
         - |-
           git_retries=20
           try=0
+          if [[ -d '/git/imapfilter' ]] ; then
+            rm -rf /git/imapfilter
+          fi
           until timeout 10 git clone --recurse-submodules ${IMAPFILTER_GIT_ARGS} ${IMAPFILTER_GIT_REPO} /git/imapfilter  ; do
             echo "Retry git pull after error ($try / $git_retries)"
             try=$((try+1))
